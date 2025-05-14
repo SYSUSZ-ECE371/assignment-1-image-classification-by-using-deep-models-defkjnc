@@ -1,0 +1,854 @@
+2025/05/13 07:32:36 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: win32
+    Python: 3.8.20 | packaged by conda-forge | (default, Sep 30 2024, 17:44:03) [MSC v.1929 64 bit (AMD64)]
+    CUDA available: False
+    MUSA available: False
+    numpy_random_seed: 2066048214
+    GCC: n/a
+    PyTorch: 2.2.2+cpu
+    PyTorch compiling details: PyTorch built with:
+  - C++ Version: 201703
+  - MSVC 192930151
+  - Intel(R) Math Kernel Library Version 2020.0.2 Product Build 20200624 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.3.2 (Git Hash 2dc95a2ad0841e29db8b22fbccaf3e5da7992b01)
+  - OpenMP 2019
+  - LAPACK is enabled (usually provided by MKL)
+  - CPU capability usage: AVX2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CXX_COMPILER=C:/actions-runner/_work/pytorch/pytorch/builder/windows/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /GR /EHsc /Zc:__cplusplus /bigobj /FS /utf-8 -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE /wd4624 /wd4068 /wd4067 /wd4267 /wd4661 /wd4717 /wd4244 /wd4804 /wd4273, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.2.2, USE_CUDA=0, USE_CUDNN=OFF, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+    TorchVision: 0.17.2+cpu
+    OpenCV: 4.11.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 2066048214
+    deterministic: False
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2025/05/13 07:32:37 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=256)
+default_hooks = dict(
+    checkpoint=dict(interval=1, type='CheckpointHook'),
+    logger=dict(interval=100, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(enable=False, type='VisualizationHook'))
+default_scope = 'mmpretrain'
+env_cfg = dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'checkpoints/mobilenet-v3-large_8xb128_in1k_20221114-0ed9ed9a.pth'
+log_level = 'INFO'
+model = dict(
+    backbone=dict(arch='large', type='MobileNetV3'),
+    head=dict(
+        act_cfg=dict(type='HSwish'),
+        dropout_rate=0.2,
+        in_channels=960,
+        init_cfg=dict(
+            bias=0.0, layer='Linear', mean=0.0, std=0.01, type='Normal'),
+        loss=dict(loss_weight=1.0, type='CrossEntropyLoss'),
+        mid_channels=[
+            1280,
+        ],
+        num_classes=5,
+        topk=(1, ),
+        type='StackedLinearClsHead'),
+    neck=dict(type='GlobalAveragePooling'),
+    type='ImageClassifier')
+optim_wrapper = dict(
+    optimizer=dict(lr=0.1, momentum=0.9, type='SGD', weight_decay=0.0001))
+optimizer = dict(
+    betas=(
+        0.9,
+        0.999,
+    ), lr=0.001, type='AdamW', weight_decay=0.05)
+param_scheduler = [
+    dict(T_max=20, by_epoch=True, eta_min=1e-06, type='CosineAnnealingLR'),
+]
+randomness = dict(deterministic=False, seed=None)
+resume = False
+test_cfg = dict()
+test_dataloader = dict(
+    batch_size=32,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        classes='data/flower_dataset/classes.txt',
+        data_prefix='val',
+        data_root='data/flower_dataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(edge='short', scale=256, type='ResizeEdge'),
+            dict(crop_size=224, type='CenterCrop'),
+            dict(type='PackInputs'),
+        ],
+        type='ImageNet'),
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(topk=(1, ), type='Accuracy')
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(edge='short', scale=256, type='ResizeEdge'),
+    dict(crop_size=224, type='CenterCrop'),
+    dict(type='PackInputs'),
+]
+train_cfg = dict(by_epoch=True, max_epochs=20, val_interval=1)
+train_dataloader = dict(
+    batch_size=32,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        classes='data/flower_dataset/classes.txt',
+        data_prefix='train',
+        data_root='data/flower_dataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(scale=224, type='RandomResizedCrop'),
+            dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+            dict(type='PackInputs'),
+        ],
+        type='ImageNet'),
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(scale=224, type='RandomResizedCrop'),
+    dict(direction='horizontal', prob=0.5, type='RandomFlip'),
+    dict(type='PackInputs'),
+]
+val_cfg = dict()
+val_dataloader = dict(
+    batch_size=32,
+    collate_fn=dict(type='default_collate'),
+    dataset=dict(
+        classes='data/flower_dataset/classes.txt',
+        data_prefix='val',
+        data_root='data/flower_dataset',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(edge='short', scale=256, type='ResizeEdge'),
+            dict(crop_size=224, type='CenterCrop'),
+            dict(type='PackInputs'),
+        ],
+        type='ImageNet'),
+    num_workers=4,
+    persistent_workers=True,
+    pin_memory=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(topk=(1, ), type='Accuracy')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    type='UniversalVisualizer', vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/flower_mbv3'
+
+2025/05/13 07:32:37 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2025/05/13 07:32:37 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) VisualizationHook                  
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+Name of parameter - Initialization information
+
+backbone.layer0.conv.weight - torch.Size([16, 3, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer0.bn.weight - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer0.bn.bias - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.depthwise_conv.conv.weight - torch.Size([16, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer1.depthwise_conv.bn.weight - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.depthwise_conv.bn.bias - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.linear_conv.conv.weight - torch.Size([16, 16, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer1.linear_conv.bn.weight - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer1.linear_conv.bn.bias - torch.Size([16]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.expand_conv.conv.weight - torch.Size([64, 16, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer2.expand_conv.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.expand_conv.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.depthwise_conv.conv.weight - torch.Size([64, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer2.depthwise_conv.bn.weight - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.depthwise_conv.bn.bias - torch.Size([64]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.linear_conv.conv.weight - torch.Size([24, 64, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer2.linear_conv.bn.weight - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer2.linear_conv.bn.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.expand_conv.conv.weight - torch.Size([72, 24, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer3.expand_conv.bn.weight - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.expand_conv.bn.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.depthwise_conv.conv.weight - torch.Size([72, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer3.depthwise_conv.bn.weight - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.depthwise_conv.bn.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.linear_conv.conv.weight - torch.Size([24, 72, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer3.linear_conv.bn.weight - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer3.linear_conv.bn.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.expand_conv.conv.weight - torch.Size([72, 24, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer4.expand_conv.bn.weight - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.expand_conv.bn.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.depthwise_conv.conv.weight - torch.Size([72, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer4.depthwise_conv.bn.weight - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.depthwise_conv.bn.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.se.conv1.conv.weight - torch.Size([24, 72, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer4.se.conv1.conv.bias - torch.Size([24]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.se.conv2.conv.weight - torch.Size([72, 24, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer4.se.conv2.conv.bias - torch.Size([72]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.linear_conv.conv.weight - torch.Size([40, 72, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer4.linear_conv.bn.weight - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer4.linear_conv.bn.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.expand_conv.conv.weight - torch.Size([120, 40, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer5.expand_conv.bn.weight - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.expand_conv.bn.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.depthwise_conv.conv.weight - torch.Size([120, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer5.depthwise_conv.bn.weight - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.depthwise_conv.bn.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.se.conv1.conv.weight - torch.Size([32, 120, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer5.se.conv1.conv.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.se.conv2.conv.weight - torch.Size([120, 32, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer5.se.conv2.conv.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.linear_conv.conv.weight - torch.Size([40, 120, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer5.linear_conv.bn.weight - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer5.linear_conv.bn.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.expand_conv.conv.weight - torch.Size([120, 40, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer6.expand_conv.bn.weight - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.expand_conv.bn.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.depthwise_conv.conv.weight - torch.Size([120, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer6.depthwise_conv.bn.weight - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.depthwise_conv.bn.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.se.conv1.conv.weight - torch.Size([32, 120, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer6.se.conv1.conv.bias - torch.Size([32]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.se.conv2.conv.weight - torch.Size([120, 32, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer6.se.conv2.conv.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.linear_conv.conv.weight - torch.Size([40, 120, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer6.linear_conv.bn.weight - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer6.linear_conv.bn.bias - torch.Size([40]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.expand_conv.conv.weight - torch.Size([240, 40, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer7.expand_conv.bn.weight - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.expand_conv.bn.bias - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.depthwise_conv.conv.weight - torch.Size([240, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer7.depthwise_conv.bn.weight - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.depthwise_conv.bn.bias - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.linear_conv.conv.weight - torch.Size([80, 240, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer7.linear_conv.bn.weight - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer7.linear_conv.bn.bias - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.expand_conv.conv.weight - torch.Size([200, 80, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer8.expand_conv.bn.weight - torch.Size([200]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.expand_conv.bn.bias - torch.Size([200]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.depthwise_conv.conv.weight - torch.Size([200, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer8.depthwise_conv.bn.weight - torch.Size([200]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.depthwise_conv.bn.bias - torch.Size([200]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.linear_conv.conv.weight - torch.Size([80, 200, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer8.linear_conv.bn.weight - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer8.linear_conv.bn.bias - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.expand_conv.conv.weight - torch.Size([184, 80, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer9.expand_conv.bn.weight - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.expand_conv.bn.bias - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.depthwise_conv.conv.weight - torch.Size([184, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer9.depthwise_conv.bn.weight - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.depthwise_conv.bn.bias - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.linear_conv.conv.weight - torch.Size([80, 184, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer9.linear_conv.bn.weight - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer9.linear_conv.bn.bias - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.expand_conv.conv.weight - torch.Size([184, 80, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer10.expand_conv.bn.weight - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.expand_conv.bn.bias - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.depthwise_conv.conv.weight - torch.Size([184, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer10.depthwise_conv.bn.weight - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.depthwise_conv.bn.bias - torch.Size([184]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.linear_conv.conv.weight - torch.Size([80, 184, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer10.linear_conv.bn.weight - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer10.linear_conv.bn.bias - torch.Size([80]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.expand_conv.conv.weight - torch.Size([480, 80, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer11.expand_conv.bn.weight - torch.Size([480]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.expand_conv.bn.bias - torch.Size([480]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.depthwise_conv.conv.weight - torch.Size([480, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer11.depthwise_conv.bn.weight - torch.Size([480]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.depthwise_conv.bn.bias - torch.Size([480]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.se.conv1.conv.weight - torch.Size([120, 480, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer11.se.conv1.conv.bias - torch.Size([120]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.se.conv2.conv.weight - torch.Size([480, 120, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer11.se.conv2.conv.bias - torch.Size([480]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.linear_conv.conv.weight - torch.Size([112, 480, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer11.linear_conv.bn.weight - torch.Size([112]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer11.linear_conv.bn.bias - torch.Size([112]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.expand_conv.conv.weight - torch.Size([672, 112, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer12.expand_conv.bn.weight - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.expand_conv.bn.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.depthwise_conv.conv.weight - torch.Size([672, 1, 3, 3]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer12.depthwise_conv.bn.weight - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.depthwise_conv.bn.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.se.conv1.conv.weight - torch.Size([168, 672, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer12.se.conv1.conv.bias - torch.Size([168]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.se.conv2.conv.weight - torch.Size([672, 168, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer12.se.conv2.conv.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.linear_conv.conv.weight - torch.Size([112, 672, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer12.linear_conv.bn.weight - torch.Size([112]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer12.linear_conv.bn.bias - torch.Size([112]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.expand_conv.conv.weight - torch.Size([672, 112, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer13.expand_conv.bn.weight - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.expand_conv.bn.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.depthwise_conv.conv.weight - torch.Size([672, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer13.depthwise_conv.bn.weight - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.depthwise_conv.bn.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.se.conv1.conv.weight - torch.Size([168, 672, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer13.se.conv1.conv.bias - torch.Size([168]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.se.conv2.conv.weight - torch.Size([672, 168, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer13.se.conv2.conv.bias - torch.Size([672]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.linear_conv.conv.weight - torch.Size([160, 672, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer13.linear_conv.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer13.linear_conv.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.expand_conv.conv.weight - torch.Size([960, 160, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer14.expand_conv.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.expand_conv.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.depthwise_conv.conv.weight - torch.Size([960, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer14.depthwise_conv.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.depthwise_conv.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.se.conv1.conv.weight - torch.Size([240, 960, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer14.se.conv1.conv.bias - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.se.conv2.conv.weight - torch.Size([960, 240, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer14.se.conv2.conv.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.linear_conv.conv.weight - torch.Size([160, 960, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer14.linear_conv.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer14.linear_conv.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.expand_conv.conv.weight - torch.Size([960, 160, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer15.expand_conv.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.expand_conv.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.depthwise_conv.conv.weight - torch.Size([960, 1, 5, 5]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer15.depthwise_conv.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.depthwise_conv.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.se.conv1.conv.weight - torch.Size([240, 960, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer15.se.conv1.conv.bias - torch.Size([240]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.se.conv2.conv.weight - torch.Size([960, 240, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer15.se.conv2.conv.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.linear_conv.conv.weight - torch.Size([160, 960, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer15.linear_conv.bn.weight - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer15.linear_conv.bn.bias - torch.Size([160]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer16.conv.weight - torch.Size([960, 160, 1, 1]): 
+Initialized by user-defined `init_weights` in ConvModule  
+
+backbone.layer16.bn.weight - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+backbone.layer16.bn.bias - torch.Size([960]): 
+The value is the same before and after calling `init_weights` of ImageClassifier  
+
+head.layers.0.fc.weight - torch.Size([1280, 960]): 
+NormalInit: mean=0.0, std=0.01, bias=0.0 
+
+head.layers.0.fc.bias - torch.Size([1280]): 
+NormalInit: mean=0.0, std=0.01, bias=0.0 
+
+head.layers.1.fc.weight - torch.Size([5, 1280]): 
+NormalInit: mean=0.0, std=0.01, bias=0.0 
+
+head.layers.1.fc.bias - torch.Size([5]): 
+NormalInit: mean=0.0, std=0.01, bias=0.0 
+2025/05/13 07:32:37 - mmengine - INFO - Load checkpoint from checkpoints/mobilenet-v3-large_8xb128_in1k_20221114-0ed9ed9a.pth
+2025/05/13 07:32:37 - mmengine - WARNING - "FileClient" will be deprecated in future. Please use io functions in https://mmengine.readthedocs.io/en/latest/api/fileio.html#file-io
+2025/05/13 07:32:37 - mmengine - WARNING - "HardDiskBackend" is the alias of "LocalBackend" and the former will be deprecated in future.
+2025/05/13 07:32:37 - mmengine - INFO - Checkpoints will be saved to C:\Users\PC\mmpretrain\work_dirs\flower_mbv3.
+2025/05/13 07:34:05 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:34:05 - mmengine - INFO - Epoch(train)  [1][72/72]  lr: 1.0000e-01  eta: 0:27:43  time: 1.0265  data_time: 0.0010  loss: 1.4999
+2025/05/13 07:34:05 - mmengine - INFO - Saving checkpoint at 1 epochs
+2025/05/13 07:34:17 - mmengine - INFO - Epoch(val) [1][18/18]    accuracy/top1: 20.2797  data_time: 0.3825  time: 0.6670
+2025/05/13 07:35:36 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:35:36 - mmengine - INFO - Epoch(train)  [2][72/72]  lr: 9.9384e-02  eta: 0:25:00  time: 1.0056  data_time: 0.0012  loss: 1.2851
+2025/05/13 07:35:36 - mmengine - INFO - Saving checkpoint at 2 epochs
+2025/05/13 07:35:42 - mmengine - INFO - Epoch(val) [2][18/18]    accuracy/top1: 19.5804  data_time: 0.0027  time: 0.2862
+2025/05/13 07:37:00 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:37:00 - mmengine - INFO - Epoch(train)  [3][72/72]  lr: 9.7553e-02  eta: 0:23:09  time: 0.9838  data_time: 0.0013  loss: 1.3439
+2025/05/13 07:37:00 - mmengine - INFO - Saving checkpoint at 3 epochs
+2025/05/13 07:37:05 - mmengine - INFO - Epoch(val) [3][18/18]    accuracy/top1: 36.8881  data_time: 0.0028  time: 0.2760
+2025/05/13 07:38:24 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:38:24 - mmengine - INFO - Epoch(train)  [4][72/72]  lr: 9.4550e-02  eta: 0:21:36  time: 0.9950  data_time: 0.0012  loss: 1.0116
+2025/05/13 07:38:24 - mmengine - INFO - Saving checkpoint at 4 epochs
+2025/05/13 07:38:30 - mmengine - INFO - Epoch(val) [4][18/18]    accuracy/top1: 39.1608  data_time: 0.0026  time: 0.2736
+2025/05/13 07:39:49 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:39:49 - mmengine - INFO - Epoch(train)  [5][72/72]  lr: 9.0451e-02  eta: 0:20:09  time: 1.0136  data_time: 0.0011  loss: 1.0107
+2025/05/13 07:39:49 - mmengine - INFO - Saving checkpoint at 5 epochs
+2025/05/13 07:39:54 - mmengine - INFO - Epoch(val) [5][18/18]    accuracy/top1: 61.1888  data_time: 0.0028  time: 0.2771
+2025/05/13 07:41:13 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:41:13 - mmengine - INFO - Epoch(train)  [6][72/72]  lr: 8.5355e-02  eta: 0:18:46  time: 1.0014  data_time: 0.0010  loss: 0.9083
+2025/05/13 07:41:13 - mmengine - INFO - Saving checkpoint at 6 epochs
+2025/05/13 07:41:19 - mmengine - INFO - Epoch(val) [6][18/18]    accuracy/top1: 68.0070  data_time: 0.0027  time: 0.2791
+2025/05/13 07:42:38 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:42:38 - mmengine - INFO - Epoch(train)  [7][72/72]  lr: 7.9389e-02  eta: 0:17:23  time: 1.0203  data_time: 0.0012  loss: 0.9084
+2025/05/13 07:42:38 - mmengine - INFO - Saving checkpoint at 7 epochs
+2025/05/13 07:42:43 - mmengine - INFO - Epoch(val) [7][18/18]    accuracy/top1: 65.7343  data_time: 0.0028  time: 0.2791
+2025/05/13 07:44:02 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:44:02 - mmengine - INFO - Epoch(train)  [8][72/72]  lr: 7.2700e-02  eta: 0:16:01  time: 1.0346  data_time: 0.0011  loss: 0.7002
+2025/05/13 07:44:02 - mmengine - INFO - Saving checkpoint at 8 epochs
+2025/05/13 07:44:08 - mmengine - INFO - Epoch(val) [8][18/18]    accuracy/top1: 68.5315  data_time: 0.0027  time: 0.2704
+2025/05/13 07:45:27 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:45:27 - mmengine - INFO - Epoch(train)  [9][72/72]  lr: 6.5451e-02  eta: 0:14:40  time: 1.0071  data_time: 0.0010  loss: 1.0027
+2025/05/13 07:45:27 - mmengine - INFO - Saving checkpoint at 9 epochs
+2025/05/13 07:45:32 - mmengine - INFO - Epoch(val) [9][18/18]    accuracy/top1: 65.9091  data_time: 0.0028  time: 0.2730
+2025/05/13 07:46:51 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:46:51 - mmengine - INFO - Epoch(train) [10][72/72]  lr: 5.7822e-02  eta: 0:13:18  time: 1.0202  data_time: 0.0013  loss: 0.6633
+2025/05/13 07:46:51 - mmengine - INFO - Saving checkpoint at 10 epochs
+2025/05/13 07:46:56 - mmengine - INFO - Epoch(val) [10][18/18]    accuracy/top1: 71.3287  data_time: 0.0027  time: 0.2757
+2025/05/13 07:48:14 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:48:14 - mmengine - INFO - Epoch(train) [11][72/72]  lr: 5.0001e-02  eta: 0:11:58  time: 0.9972  data_time: 0.0010  loss: 0.8308
+2025/05/13 07:48:14 - mmengine - INFO - Saving checkpoint at 11 epochs
+2025/05/13 07:48:20 - mmengine - INFO - Epoch(val) [11][18/18]    accuracy/top1: 69.7552  data_time: 0.0026  time: 0.2759
+2025/05/13 07:49:39 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:49:39 - mmengine - INFO - Epoch(train) [12][72/72]  lr: 4.2179e-02  eta: 0:10:37  time: 1.0071  data_time: 0.0010  loss: 0.6381
+2025/05/13 07:49:39 - mmengine - INFO - Saving checkpoint at 12 epochs
+2025/05/13 07:49:44 - mmengine - INFO - Epoch(val) [12][18/18]    accuracy/top1: 69.5804  data_time: 0.0026  time: 0.2848
+2025/05/13 07:51:10 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:51:10 - mmengine - INFO - Epoch(train) [13][72/72]  lr: 3.4550e-02  eta: 0:09:21  time: 1.0789  data_time: 0.0011  loss: 0.6735
+2025/05/13 07:51:10 - mmengine - INFO - Saving checkpoint at 13 epochs
+2025/05/13 07:51:15 - mmengine - INFO - Epoch(val) [13][18/18]    accuracy/top1: 74.4755  data_time: 0.0028  time: 0.2903
+2025/05/13 07:52:32 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:52:41 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:52:41 - mmengine - INFO - Epoch(train) [14][72/72]  lr: 2.7301e-02  eta: 0:08:03  time: 1.0880  data_time: 0.0012  loss: 0.5664
+2025/05/13 07:52:41 - mmengine - INFO - Saving checkpoint at 14 epochs
+2025/05/13 07:52:46 - mmengine - INFO - Epoch(val) [14][18/18]    accuracy/top1: 70.6294  data_time: 0.0032  time: 0.2912
+2025/05/13 07:54:10 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:54:10 - mmengine - INFO - Epoch(train) [15][72/72]  lr: 2.0612e-02  eta: 0:06:43  time: 1.0776  data_time: 0.0011  loss: 0.6271
+2025/05/13 07:54:10 - mmengine - INFO - Saving checkpoint at 15 epochs
+2025/05/13 07:54:15 - mmengine - INFO - Epoch(val) [15][18/18]    accuracy/top1: 75.1748  data_time: 0.0030  time: 0.2954
+2025/05/13 07:55:39 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:55:39 - mmengine - INFO - Epoch(train) [16][72/72]  lr: 1.4646e-02  eta: 0:05:23  time: 1.0478  data_time: 0.0010  loss: 0.6286
+2025/05/13 07:55:39 - mmengine - INFO - Saving checkpoint at 16 epochs
+2025/05/13 07:55:45 - mmengine - INFO - Epoch(val) [16][18/18]    accuracy/top1: 73.0769  data_time: 0.0030  time: 0.2986
+2025/05/13 07:57:08 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:57:08 - mmengine - INFO - Epoch(train) [17][72/72]  lr: 9.5501e-03  eta: 0:04:03  time: 1.0439  data_time: 0.0011  loss: 0.6228
+2025/05/13 07:57:08 - mmengine - INFO - Saving checkpoint at 17 epochs
+2025/05/13 07:57:14 - mmengine - INFO - Epoch(val) [17][18/18]    accuracy/top1: 77.4476  data_time: 0.0028  time: 0.2774
+2025/05/13 07:58:32 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:58:32 - mmengine - INFO - Epoch(train) [18][72/72]  lr: 5.4506e-03  eta: 0:02:41  time: 0.9590  data_time: 0.0011  loss: 0.4547
+2025/05/13 07:58:32 - mmengine - INFO - Saving checkpoint at 18 epochs
+2025/05/13 07:58:38 - mmengine - INFO - Epoch(val) [18][18/18]    accuracy/top1: 78.6713  data_time: 0.0027  time: 0.2764
+2025/05/13 07:59:56 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 07:59:56 - mmengine - INFO - Epoch(train) [19][72/72]  lr: 2.4481e-03  eta: 0:01:20  time: 0.9896  data_time: 0.0011  loss: 0.5152
+2025/05/13 07:59:56 - mmengine - INFO - Saving checkpoint at 19 epochs
+2025/05/13 08:00:02 - mmengine - INFO - Epoch(val) [19][18/18]    accuracy/top1: 79.5455  data_time: 0.0028  time: 0.2776
+2025/05/13 08:01:21 - mmengine - INFO - Exp name: my_flower_convnext-base_20250513_073236
+2025/05/13 08:01:21 - mmengine - INFO - Epoch(train) [20][72/72]  lr: 6.1658e-04  eta: 0:00:00  time: 1.0159  data_time: 0.0010  loss: 0.6061
+2025/05/13 08:01:21 - mmengine - INFO - Saving checkpoint at 20 epochs
+2025/05/13 08:01:26 - mmengine - INFO - Epoch(val) [20][18/18]    accuracy/top1: 79.3706  data_time: 0.0027  time: 0.2763
